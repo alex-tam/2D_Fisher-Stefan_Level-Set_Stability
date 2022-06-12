@@ -160,7 +160,7 @@ end
 function fisher_stefan_2d()
     # Parameters and domain
     par = Params(q = 12*π/10) # Initialise data structure of model parameters
-    nx::Int = (par.Nx-1)/2; ny::Int = (par.Ny-1)/2; # Indices for slice plots
+    nx::Int = (par.Nx-1)/2; ny::Int = (par.Ny-1)/2 # Indices for slice plots
     x = range(0, par.Lx, length = par.Nx); dx = x[2] - x[1] # Computational domain (x)
     y = range(0, par.Ly, length = par.Ny); dy = y[2] - y[1] # Computational domain (y)
     t = range(0, par.T, length = par.Nt); dt = t[2] - t[1] # Time domain
