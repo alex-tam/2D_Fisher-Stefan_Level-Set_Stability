@@ -117,7 +117,8 @@ function front_position(x, ϕ, par, ny, dx)
                 Lj = x[i] + θ*dx
                 if Lj <= Lmin
                     Lmin = Lj
-                elseif Lj >= Lmax
+                end
+                if Lj >= Lmax
                     Lmax = Lj
                 end
                 if j == ny
@@ -126,8 +127,7 @@ function front_position(x, ϕ, par, ny, dx)
             end
         end
     end
-    # Compute amplitude of perturbation
-    return L, (Lmax-Lmin)/2
+    return L, (Lmax-Lmin)/2 # Return amplitude of perturbation
 end
 
 "Draw interface as series of points"
