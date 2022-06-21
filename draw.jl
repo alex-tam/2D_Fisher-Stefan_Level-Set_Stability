@@ -59,7 +59,7 @@ function draw_growth(t, Amp, t_min::Float64)
         end
     end
     poly = fit(t[ind:end], log.(Amp)[ind:end], 1) # Fit straight line to data
-    plot(t, log.(Amp), xlabel = L"$t$", ylabel = L"$\log(\textrm{Amplitude})$", label = "Numerical Data", linewidth = 2, margin = 5mm) # Plot data
+    plot(t, log.(Amp), xlabel = L"$t$", ylabel = L"$\log(A)$", label = "Numerical Data", linewidth = 2, margin = 5mm) # Plot data
     scatter!([t[ind], t[end]], [log(Amp[ind]), log(Amp[end])], markersize = 5, markershape = :xcross, markercolor = :red, label = false) # Scatter plot of t_min
     plot!(t, poly.coeffs[2].*t .+ poly.coeffs[1], label = "Linear Fit", linestyle=:dash, linewidth = 2) # Plot linear trendline
     ω = poly.coeffs[2] # Obtain slope
