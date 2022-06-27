@@ -130,36 +130,10 @@ function front_position(x, ϕ, par, ny, dx)
     return L, (Lmax-Lmin)/2 # Return amplitude of perturbation
 end
 
-"Draw interface as series of points"
-function draw_interface(x, y, ϕ, par, dx, dy)
-    D = find_domain(par, ϕ)
-    xi = Vector{Float64}()
-    yi = Vector{Float64}()
-    for gp in D
-        if gp.θxp != 1.0
-            push!(xi, x[gp.xInd] + dx*gp.θxp)
-            push!(yi, y[gp.yInd])
-        end
-        if gp.θxm != 1.0
-            push!(xi, x[gp.xInd] - dx*gp.θxm)
-            push!(yi, y[gp.yInd])
-        end
-        if gp.θyp != 1.0
-            push!(xi, x[gp.xInd])
-            push!(yi, y[gp.yInd] + dy*gp.θyp)
-        end
-        if gp.θym != 1.0
-            push!(xi, x[gp.xInd])
-            push!(yi, y[gp.yInd] - dy*gp.θym)
-        end
-    end
-    scatter!([xi],[yi], xlabel = L"$x$", ylabel = L"$y$", margin=3mm, xlims=(0,par.Lx), ylims=(0,par.Ly), color="green", legend = false, aspect_ratio=:equal, markersize=2)
-end
-
 "Compute a solution"
 function fisher_stefan_2d()
     # Parameters and domain
-    par = Params(q = 12*π/10) # Initialise data structure of model parameters
+    par = Params() # Initialise data structure of model parameters
     nx::Int = (par.Nx-1)/2; ny::Int = (par.Ny-1)/2 # Indices for slice plots
     x = range(0, par.Lx, length = par.Nx); dx = x[2] - x[1] # Computational domain (x)
     y = range(0, par.Ly, length = par.Ny); dy = y[2] - y[1] # Computational domain (y)
@@ -187,7 +161,7 @@ function fisher_stefan_2d()
         # 4. Solve level-set equation
         ϕ = level_set(V, ϕ, par, dx, dy, dt)
         # 5. Re-initialise level-set function as a signed-distance
-        if mod(i, 1) == 0
+        if mod(i, 100) == 0
             ϕ = reinitialisation(ϕ, par, dx, dy, par.ϕ_Iterations)
         end
         # Optional: Post-processing
@@ -206,22 +180,6 @@ function fisher_stefan_2d()
         writedlm("L.csv", L)
         writedlm("Amp.csv", Amp)
     end
-    # Optional: Plot front position versus time
-    gr(); plot() # Load GR plotting backend and clear previous plots
-    default(titlefont = (18, "Computer Modern"), guidefont = (26, "Computer Modern"), tickfont = (18, "Computer Modern"))
-    plot(t, L, xlabel = L"$t$", ylabel = L"$L(t)$", margin=3mm, xlims=(0,maximum(t)), ylims=(0,maximum(L)), legend = false)
-    savefig("L.pdf")
-    if par.ε == 0.0
-        @printf("Numerical travelling wave speed is %f.\n", (L[end]-L[1])/par.T)
-    end
-    # Optional: Draw interface
-    plot() # Load GR plotting backend and clear previous plots
-    draw_interface(x, y, ϕ, par, dx, dy)
-    for i in plot_times
-        ϕ = readdlm("Phi-$i.csv")
-        draw_interface(x, y, ϕ, par, dx, dy)
-    end
-    savefig("interface.pdf")
 end
 
 @time fisher_stefan_2d()

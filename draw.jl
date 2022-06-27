@@ -12,20 +12,24 @@ using Polynomials
 function draw_heat(x, y, U, V, ϕ, i, Lx, Ly)
     gr(); plot() # Load GR plotting backend and clear previous plots
     default(fontfamily = "Computer Modern", titlefontsize = 18, guidefontsize = 26, tickfontsize = 18, legendfontsize = 18)
-    heatmap(x,y,transpose(U), xlabel = L"$x$", ylabel = L"$y$", margin=3mm, aspect_ratio=:equal, xlims=(0,Lx), ylims =(0,Ly), tick_direction=:out, c=:plasma, clims=(0.0, 1.0))
+    p1 = heatmap(x,y,transpose(U), xlabel = L"$x$", ylabel = L"$y$", margin=3mm, aspect_ratio=:equal, xlims=(0,Lx), ylims =(0,Ly), tick_direction=:out, c=:plasma, clims=(0.0, 1.0))
+    contour!(p1, x, y, transpose(ϕ), c=:red, linewidth = 2, levels=[0.000001], clim=(0.0, 1.0))
     savefig("u-$i.pdf")
     heatmap(x,y,transpose(V), xlabel = L"$x$", ylabel = L"$y$", margin=3mm, aspect_ratio=:equal, xlims=(0,Lx), ylims =(0,Ly), tick_direction=:out, c=:plasma)
     savefig("V-$i.pdf")
-    heatmap(x,y,transpose(ϕ), xlabel = L"$x$", ylabel = L"$y$", margin=3mm, aspect_ratio=:equal, xlims=(0,Lx), ylims =(0,Ly), tick_direction=:out, c=:plasma)
+    p2 = heatmap(x,y,transpose(ϕ), xlabel = L"$x$", ylabel = L"$y$", margin=3mm, aspect_ratio=:equal, xlims=(0,Lx), ylims =(0,Ly), tick_direction=:out, c=:plasma)
+    contour!(p2, x, y, transpose(ϕ), c=:red, linewidth = 2, levels=[0.0])
     savefig("phi-$i.pdf")
 end
 
 function draw_heat(x, y, U, ϕ, i, Lx, Ly)
     gr(); plot() # Load GR plotting backend and clear previous plots
     default(fontfamily = "Computer Modern", titlefontsize = 18, guidefontsize = 26, tickfontsize = 18, legendfontsize = 18)
-    heatmap(x,y,transpose(U), xlabel = L"$x$", ylabel = L"$y$", margin=3mm, aspect_ratio=:equal, xlims=(0,Lx), ylims =(0,Ly), tick_direction=:out, c=:plasma, clims=(0.0, 1.0))
+    p1 = heatmap(x,y,transpose(U), xlabel = L"$x$", ylabel = L"$y$", margin=3mm, aspect_ratio=:equal, xlims=(0,Lx), ylims =(0,Ly), tick_direction=:out, c=:plasma, clims=(0.0, 1.0))
+    contour!(p1, x, y, transpose(ϕ), c=:red, linewidth = 2, levels=[0.000001], clim=(0.0, 1.0))
     savefig("u-$i.pdf")
-    heatmap(x,y,transpose(ϕ), xlabel = L"$x$", ylabel = L"$y$", margin=3mm, aspect_ratio=:equal, xlims=(0,Lx), ylims =(0,Ly), tick_direction=:out, c=:plasma)
+    p2 = heatmap(x,y,transpose(ϕ), xlabel = L"$x$", ylabel = L"$y$", margin=3mm, aspect_ratio=:equal, xlims=(0,Lx), ylims =(0,Ly), tick_direction=:out, c=:plasma)
+    contour!(p2, x, y, transpose(ϕ), c=:red, linewidth = 2, levels=[0.0])
     savefig("phi-$i.pdf")
 end
 
@@ -67,21 +71,66 @@ function draw_growth(t, Amp, t_min::Float64)
     savefig("perturbation_amplitude.pdf")
 end
 
+"Plot interface position versus time"
+function draw_interface(t, L, ε, x, y, dx, Lx, Ly, Nx, Ny, plot_times)
+    gr(); plot() # Load GR plotting backend and clear previous plots
+    default(titlefont = (18, "Computer Modern"), guidefont = (26, "Computer Modern"), tickfont = (18, "Computer Modern"))
+    plot(t, L, xlabel = L"$t$", ylabel = L"$L(t)$", margin=3mm, xlims=(0,maximum(t)), ylims=(0,maximum(L)), legend = false)
+    savefig("L.pdf")
+    if ε == 0.0
+        @printf("Numerical travelling wave speed is %f.\n", (L[end]-L[1])/par.T)
+    end
+    # Optional: Draw interface
+    plot() # Load GR plotting backend and clear previous plots
+    plot_interface(x, y, dx, Lx, Ly, Nx, Ny, plot_times)
+    savefig("interface.pdf")
+end
+
+"Draw interface as series of points"
+function plot_interface(x, y, dx, Lx, Ly, Nx, Ny, plot_times)
+    pt = vcat(0, plot_times)
+    for k in pt
+        # Import level-set function at relevant time
+        ϕ = readdlm("Phi-$k.csv")
+        # Pre-allocate empty vectors
+        xi = Vector{Float64}()
+        yi = Vector{Float64}()
+        # Locate interface grid points
+        for j = 1:Ny
+            ϕv = ϕ[:,j] # Obtain 1D vector of ϕ
+            for i = 1:Nx
+                if (ϕv[i] < 0) && (ϕv[i+1] >= 0)
+                    θ = ϕv[i]/(ϕv[i] - ϕv[i+1])
+                    push!(xi, x[i] + θ*dx)
+                    push!(yi, y[j])
+                end
+            end
+        end
+        # Plot interface
+        scatter!([xi],[yi], xlabel = L"$x$", ylabel = L"$y$", margin=3mm, xlims=(0,Lx), ylims=(0,Ly), color="green", legend = false, aspect_ratio=:equal, markersize=2)
+    end
+    savefig("interface.pdf")
+end
+
 "Control function for plotting"
 function draw()
     # Import data
     plot_times = convert(Vector{Int}, vec(readdlm("plot_times.csv")))
-    x = vec(readdlm("x.csv"))
+    x = vec(readdlm("x.csv")); dx = x[2] - x[1]
     y = vec(readdlm("y.csv"))
     nx::Int = (length(x)-1)/2; ny::Int = (length(y)-1)/2
-    Lx = maximum(x); Ly = maximum(y)
+    Lx = maximum(x); Ly = maximum(y); 
+    Nx = length(x); Ny = length(y)
     U = readdlm("U-0.csv")
     ϕ = readdlm("Phi-0.csv")
     t = vec(readdlm("t.csv"))
+    L = vec(readdlm("L.csv"))
     Amp = vec(readdlm("Amp.csv"))
+    ε = 0.1
     # Plot
-    draw_heat(x, y, U, ϕ, 0, Lx, Ly)
-    draw_slices(x, y, nx, ny, Lx, Ly, plot_times)
+    draw_heat(x, y, U, ϕ, 0, Lx, Ly) # Heat maps
+    draw_slices(x, y, nx, ny, Lx, Ly, plot_times) # Slice plots
+    draw_interface(t, L, ε, x, y, dx, Lx, Ly, Nx, Ny, plot_times)
     for i in plot_times
         U = readdlm("U-$i.csv")
         V = readdlm("V-$i.csv")
@@ -89,7 +138,7 @@ function draw()
         draw_heat(x, y, U, V, ϕ, i, Lx, Ly)
     end
     # Numerical growth rate
-    draw_growth(t, Amp, 0.1)
+    draw_growth(t, Amp, ε)
 end
 
 @time draw()
