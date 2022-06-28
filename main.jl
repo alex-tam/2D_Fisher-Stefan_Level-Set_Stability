@@ -53,8 +53,8 @@ function ic(par, x, y)
     # Compute travelling wave solution and correction
     u0, u1, ξ = twic(par)
     # Construct linear splines for interpolation
-    spl_0 = Spline1D(ξ, u0) # Generate 1D spline
-    spl_1 = Spline1D(ξ, u1) # Generate 1D spline
+    spl_0 = Spline1D(ξ, u0; k=1) # Generate 1D linear spline
+    spl_1 = Spline1D(ξ, u1; k=1) # Generate 1D linear spline
     # Compute ϕ = ξ at each grid point
     for i = 1:length(x)
         for j = 1:length(y)
