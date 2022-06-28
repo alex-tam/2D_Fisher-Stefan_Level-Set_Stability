@@ -28,14 +28,14 @@ include("reinitialisation.jl")
     λ::Float64 = 1.0 # [-] Reaction rate
     κ::Float64 = -0.5 # [-] Inverse Stefan number
     α::Float64 = 1.0 # [-] Maximum initial density
-    β::Float64 = 6.0 # [-] Initial interface position
+    β::Float64 = 8.0 # [-] Initial interface position
     uf::Float64 = 0.1 # [-] Background density at interface
     θb::Float64 = 0.01 # [-] Threshold for whether a grid point is close to interface (relative to Δx)
     θ::Float64 = 1.99 # [-] Parameter for minmod flux-limiter
-    Lx::Float64 = 7.5 # [-] Spatial domain limit (x)
+    Lx::Float64 = 10.0 # [-] Spatial domain limit (x)
     Ly::Float64 = 10.0 # [-] Spatial domain limit (y)
     T::Float64 = 1.0 # [-] End time
-    Nx::Int = 301 # [-] Number of grid points (x)
+    Nx::Int = 401 # [-] Number of grid points (x)
     Ny::Int = 401 # [-] Number of grid points (y)
     Nt::Int = 1001 # [-] Number of time steps
     Nξ::Int = 2001 # [-] Number of grid points for travelling wave (ξ)
@@ -161,7 +161,7 @@ function fisher_stefan_2d()
         # 4. Solve level-set equation
         ϕ = level_set(V, ϕ, par, dx, dy, dt)
         # 5. Re-initialise level-set function as a signed-distance
-        if mod(i, 100) == 0
+        if mod(i, 1) == 0
             ϕ = reinitialisation(ϕ, par, dx, dy, par.ϕ_Iterations)
         end
         # Optional: Post-processing
