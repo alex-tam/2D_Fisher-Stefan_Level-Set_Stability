@@ -160,7 +160,7 @@ function fisher_stefan_2d()
         V = extend_velocity(D, dΩ, U, ϕ, par, dx, dy)
         # 4. Solve level-set equation
         ϕ = level_set(V, ϕ, par, dx, dy, dt)
-        # 5. Re-initialise level-set function as a signed-distance
+        # 5. Re-initialise level-set function as a signed-distance function
         if mod(i, 1) == 0
             ϕ = reinitialisation(ϕ, par, dx, dy, par.ϕ_Iterations)
         end

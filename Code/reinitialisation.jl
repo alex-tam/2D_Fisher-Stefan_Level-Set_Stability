@@ -28,10 +28,8 @@ function reinit_lt(ϕ, par, dx, dy, dt)
             end
             # dϕ/dy
             if j == 1
-                # dyϕs[i,j] = (ϕs[i,j+1]-ϕs[i,j])/dy # ϕ`_{i+1/2,j+1/2}/Δy
                 dyϕ[i,j] = minmod(par.θ*(ϕ[i,j+1]-ϕ[i,j])/dy, (ϕ[i,j+1]-ϕ[i,par.Ny-1])/(2*dy), par.θ*(ϕ[i,j]-ϕ[i,par.Ny-1])/dy) # ϕ`_{i+1/2,j+1/2}/Δy
             elseif j == par.Ny
-                # dyϕs[i,j] = (ϕs[i,j]-ϕs[i,j-1])/dy # ϕ`_{i+1/2,j+1/2}/Δy
                 dyϕ[i,j] = minmod(par.θ*(ϕ[i,2]-ϕ[i,j])/dy, (ϕ[i,2]-ϕ[i,j-1])/(2*dy), par.θ*(ϕ[i,j]-ϕ[i,j-1])/dy) # ϕ`_{i+1/2,j+1/2}/Δy
             else
                 dyϕ[i,j] = minmod(par.θ*(ϕ[i,j+1]-ϕ[i,j])/dy, (ϕ[i,j+1]-ϕ[i,j-1])/(2*dy), par.θ*(ϕ[i,j]-ϕ[i,j-1])/dy) # ϕ`_{i+1/2,j+1/2}/Δy
@@ -58,12 +56,9 @@ function reinit_lt(ϕ, par, dx, dy, dt)
             else
                 dxϕs[i,j] = minmod(par.θ*(ϕs[i+1,j]-ϕs[i,j])/dx, (ϕs[i+1,j]-ϕs[i-1,j])/(2*dx), par.θ*(ϕs[i,j]-ϕs[i-1,j])/dx) # ϕ'_{i+1/2,j+1/2}/Δx
             end
-            # Check periodic conditions for staggered grid
             if j == 1
-                # dyϕs[i,j] = (ϕs[i,j+1]-ϕs[i,j])/dy # ϕ`_{i+1/2,j+1/2}/Δy
                 dyϕs[i,j] = minmod(par.θ*(ϕs[i,j+1]-ϕs[i,j])/dy, (ϕs[i,j+1]-ϕs[i,par.Ny-1])/(2*dy), par.θ*(ϕs[i,j]-ϕs[i,par.Ny-1])/dy) # ϕ`_{i+1/2,j+1/2}/Δy
             elseif j == par.Ny-1
-                # dyϕs[i,j] = (ϕs[i,j]-ϕs[i,j-1])/dy # ϕ`_{i+1/2,j+1/2}/Δy
                 dyϕs[i,j] = minmod(par.θ*(ϕs[i,1]-ϕs[i,j])/dy, (ϕs[i,1]-ϕs[i,j-1])/(2*dy), par.θ*(ϕs[i,j]-ϕs[i,j-1])/dy) # ϕ`_{i+1/2,j+1/2}/Δy
             else
                 dyϕs[i,j] = minmod(par.θ*(ϕs[i,j+1]-ϕs[i,j])/dy, (ϕs[i,j+1]-ϕs[i,j-1])/(2*dy), par.θ*(ϕs[i,j]-ϕs[i,j-1])/dy) # ϕ`_{i+1/2,j+1/2}/Δy
@@ -76,7 +71,6 @@ function reinit_lt(ϕ, par, dx, dy, dt)
             if (i == 1) || (i == par.Nx) # Ignore x-boundaries
                 ϕn[i,j] = ϕ[i,j]
             elseif (i != 1) && (i != par.Nx) && ((j == 1) || (j == par.Ny)) # Apply periodic conditions on y-boundaries
-                # This rule needs to be carefully checked, I think it's correct
                 ϕn[i,j] = (ϕs[i,1] + ϕs[i-1,1] + ϕs[i,par.Ny-1] + ϕs[i-1,par.Ny-1])/4 + 
                 (dx*(dxϕs[i-1,par.Ny-1]-dxϕs[i,par.Ny-1]) + dx*(dxϕs[i-1,1]-dxϕs[i,1]) + dy*(dyϕs[i-1,par.Ny-1]-dyϕs[i-1,1]) + dy*(dyϕs[i,par.Ny-1]-dyϕs[i,1]))/16 # Compute non-staggered cell average
             else # Interior grid points
