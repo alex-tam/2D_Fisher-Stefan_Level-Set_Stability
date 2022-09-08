@@ -5,7 +5,7 @@
 function interface_speed(dΩ, U, ϕ, par, dx, dy)
     uf = interface_density(dΩ, ϕ, par, dx, dy) # Obtain interface density
     vi = Vector{Float64}() # Pre-allocate empty vector of interface speed
-    for i = 1:length(dΩ)
+    for i in eachindex(dΩ)
         if dΩ[i].m.xInd != dΩ[i].p.xInd # Interface lies in x-direction
             ux = find_ux_x(dΩ, dΩ[i], uf, uf[i], U, ϕ, par, dx)
             uy = find_uy_x(dΩ[i], uf[i], U, ϕ, par, dx, dy)
@@ -156,7 +156,6 @@ function find_uy_x(ip, uf, U, ϕ, par, dx, dy)
             return (1/dy)*( (2+θg)*uf/(1+θg) - (1+θg)*urm/θg + ufg/(θg*(1+θg)) ) # Non-standard one-sided difference
         end
     else # If ghost nodes above and below interface are both not in Ω
-        # Could attempt to locate ghost nodes, but rseults would probably be inaccurate
         return 0.0
     end
 end
@@ -195,7 +194,6 @@ function find_ux_y(ip, uf, U, ϕ, par, dx, dy)
             return (1/dx)*( (2+θg)*uf/(1+θg) - (1+θg)*urm/θg + ufg/(θg*(1+θg)) ) # Non-standard one-sided difference
         end
     else # If ghost nodes to left and right of interface are both not in Ω (should never occur for perturbed planar fronts)
-        # Could attempt to locate ghost nodes, but rseults would probably be inaccurate
         return 0.0
     end
 end

@@ -57,7 +57,7 @@ function draw_growth(t, Amp, t_min::Float64)
     gr(); plot() # Load GR plotting backend and clear previous plots
     default(fontfamily = "Computer Modern", titlefontsize = 14, guidefontsize = 20, tickfontsize = 14, legendfontsize = 14)
     ind::Int = 0 # Index corresponding to t = 0.1
-    for i = 1:length(t)
+    for i in eachindex(t)
         if t[i] <= t_min
             ind += 1
         end

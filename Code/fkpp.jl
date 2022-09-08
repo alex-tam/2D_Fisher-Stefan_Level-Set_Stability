@@ -16,7 +16,7 @@ end
 "Construct right-hand vector for use in DifferentialEquations.jl"
 function fkpp_rhs!(du, u, p, t, D, dΩ, ϕ, uf, y, par, dx, dy)
     U = build_u_matrix(u, y, par, D) # Generate matrix
-    for i = 1:length(D) # Loop over grid points
+    for i in eachindex(D) # Loop over grid points
         if (D[i].yInd != 1) && (D[i].yInd != par.Ny) && (D[i].Ω == true) && (D[i].dΩ == false) # Interior grid points inside Ω, away from dΩ
             # Obtain density at stencil points
             u_mid = U[D[i].xInd, D[i].yInd]

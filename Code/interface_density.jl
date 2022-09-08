@@ -28,7 +28,7 @@ end
 
 "Obtain velocity at a specified interface point"
 function get_interface_density(xm, ym, xp, yp, dΩ, uf)
-    for i = 1:length(dΩ) # Loop over candidate points
+    for i in eachindex(dΩ) # Loop over candidate points
         if (xm == dΩ[i].m.xInd) && (ym == dΩ[i].m.yInd) && (xp == dΩ[i].p.xInd) && (yp == dΩ[i].p.yInd) # If all indices are correct
             return uf[i]
         end

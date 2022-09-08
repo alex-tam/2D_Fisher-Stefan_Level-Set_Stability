@@ -56,14 +56,14 @@ function ic(par, x, y)
     spl_0 = Spline1D(ξ, u0; k=1) # Generate 1D linear spline
     spl_1 = Spline1D(ξ, u1; k=1) # Generate 1D linear spline
     # Compute ϕ = ξ at each grid point
-    for i = 1:length(x)
-        for j = 1:length(y)
+    for i in eachindex(x)
+        for j in eachindex(y)
             ϕ[i,j] = x[i] - par.β - par.ε*cos(par.q*y[j])
         end
     end
     # Interpolate travelling wave to obtain initial densities
-    for i = 1:length(x)
-        for j = 1:length(y)
+    for i in eachindex(x)
+        for j in eachindex(y)
             if ϕ[i,j] < 0 # If grid point is in Ω(0)
                 U[i,j] = spl_0(ϕ[i,j]) + par.ε*spl_1(ϕ[i,j])*cos(par.q*y[j]) # Perturbed travelling wave
             else # If grid point is not in Ω(0)
@@ -88,7 +88,7 @@ function build_u_matrix(u::Vector, y, par, D)
     U = zeros(par.Nx, par.Ny) # Pre-allocate (incorporate a Dirichlet condition on right boundary)
     U[par.Nx,:] .= par.uf # Dirichlet condition on right boundary
     U[1,:] .= par.α # Dirichlet condition on left boundary
-    for i = 1:length(D)
+    for i in eachindex(D)
         U[D[i].xInd, D[i].yInd] = u[i]
     end
     return U
@@ -97,7 +97,7 @@ end
 "Build matrix from vector ordered by entries in D"
 function build_v_matrix(v::Vector, par, D)
     V = zeros(par.Nx, par.Ny) # Pre-allocate (incorporate a Dirichlet condition on computational boundary)
-    for i = 1:length(D)
+    for i in eachindex(D)
         V[D[i].xInd, D[i].yInd] = v[i]
     end
     return V

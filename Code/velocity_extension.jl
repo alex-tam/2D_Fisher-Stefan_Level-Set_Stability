@@ -37,7 +37,7 @@ function velocity_init(D, dΩ, par, vi)
                 xm = gp.xInd; xp = gp.xInd; ym = gp.yInd-1; yp = gp.yInd
             end
             # Assign V to interface speed at closest point
-            for i = 1:length(dΩ)
+            for i in eachindex(dΩ)
                 if (xm == dΩ[i].m.xInd) && (ym == dΩ[i].m.yInd) && (xp == dΩ[i].p.xInd) && (yp == dΩ[i].p.yInd)
                     V[gp.xInd, gp.yInd] = vi[i]
                 end
@@ -49,7 +49,7 @@ end
 
 "Obtain velocity at a specified interface point"
 function get_interface_speed(xm, ym, xp, yp, dΩ, vi)
-    for i = 1:length(dΩ) # Loop over candidate points
+    for i in eachindex(dΩ) # Loop over candidate points
         if (xm == dΩ[i].m.xInd) && (ym == dΩ[i].m.yInd) && (xp == dΩ[i].p.xInd) && (yp == dΩ[i].p.yInd) # If all indices are correct
             return vi[i]
         end
@@ -59,7 +59,7 @@ end
 "Construct right-hand vector of outward velocity extension PDE, for use in DifferentialEquations.jl"
 function vel_outward_rhs!(du, u, p, t, D, dΩ, vi, par, ϕ, dx, dy)
     V = build_v_matrix(u, par, D) # Generate matrix
-    for i = 1:length(D) # Loop over interior grid points
+    for i in eachindex(D) # Loop over interior grid points
         if (D[i].Ω == true) || (D[i].dΩ == true) # Grid points in Ω or close to interface
             du[i] = 0.0 # Set RHS to zero
         else
@@ -157,7 +157,7 @@ end
 "Construct right-hand vector of inward velocity extension PDE, for use in DifferentialEquations.jl"
 function vel_inward_rhs!(du, u, p, t, D, dΩ, vi, par, ϕ, dx, dy)
     V = build_v_matrix(u, par, D) # Generate matrix
-    for i = 1:length(D) # Loop over interior grid points
+    for i in eachindex(D) # Loop over interior grid points
         if (D[i].Ω == false) || (D[i].dΩ == true) # Grid points outside Ω or close to interface
             du[i] = 0.0 # Set RHS to zero
         else
