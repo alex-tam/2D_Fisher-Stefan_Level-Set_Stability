@@ -72,16 +72,16 @@ function draw_growth(t, Amp, t_min::Float64)
 end
 
 "Plot interface position versus time"
-function draw_interface(t, L, ε, x, y, dx, Lx, Ly, Nx, Ny, plot_times)
+function draw_interface(t, L, ε, T, x, y, dx, Lx, Ly, Nx, Ny, plot_times)
     gr(); plot() # Load GR plotting backend and clear previous plots
     default(titlefont = (18, "Computer Modern"), guidefont = (26, "Computer Modern"), tickfont = (18, "Computer Modern"))
-    plot(t, L, xlabel = L"$t$", ylabel = L"$L(t)$", margin=3mm, xlims=(0,maximum(t)), ylims=(0,maximum(L)), legend = false)
+    plot(t, L, xlabel = L"$t$", ylabel = L"$L(t)$", margin=3mm, xlims=(0, maximum(t)), ylims=(0, maximum(L)), legend = false)
     savefig("L.pdf")
     if ε == 0.0
-        @printf("Numerical travelling wave speed is %f.\n", (L[end]-L[1])/par.T)
+        @printf("Numerical travelling wave speed is %f.\n", (L[end]-L[1])/T)
     end
     # Optional: Draw interface
-    plot() # Load GR plotting backend and clear previous plots
+    plot() # Clear previous plots
     plot_interface(x, y, dx, Lx, Ly, Nx, Ny, plot_times)
     savefig("interface.pdf")
 end
@@ -118,7 +118,7 @@ function draw()
     plot_times = convert(Vector{Int}, vec(readdlm("plot_times.csv")))
     x = vec(readdlm("x.csv")); dx = x[2] - x[1]
     y = vec(readdlm("y.csv"))
-    nx::Int = (length(x)-1)/2; ny::Int = (length(y)-1)/2
+    nx::Int = (length(x)+1)/2; ny::Int = (length(y)+1)/2
     Lx = maximum(x); Ly = maximum(y); 
     Nx = length(x); Ny = length(y)
     U = readdlm("U-0.csv")
@@ -126,11 +126,12 @@ function draw()
     t = vec(readdlm("t.csv"))
     L = vec(readdlm("L.csv"))
     Amp = vec(readdlm("Amp.csv"))
-    ε = 0.1
+    ε = 0.0
+    T = 1.0
     # Plot
     draw_heat(x, y, U, ϕ, 0, Lx, Ly) # Heat maps
     draw_slices(x, y, nx, ny, Lx, Ly, plot_times) # Slice plots
-    draw_interface(t, L, ε, x, y, dx, Lx, Ly, Nx, Ny, plot_times)
+    draw_interface(t, L, ε, T, x, y, dx, Lx, Ly, Nx, Ny, plot_times)
     for i in plot_times
         U = readdlm("U-$i.csv")
         V = readdlm("V-$i.csv")
