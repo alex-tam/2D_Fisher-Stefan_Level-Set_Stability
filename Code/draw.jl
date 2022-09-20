@@ -38,13 +38,13 @@ function draw_slices(x, y, nx, ny, Lx, Ly, plot_times)
     gr(); plot() # Load GR plotting backend and clear previous plots
     default(fontfamily = "Computer Modern", titlefontsize = 18, guidefontsize = 26, tickfontsize = 18, legendfontsize = 18)
     U = readdlm("U-0.csv")
-    plot(x, U[:,ny], xlabel = L"$x$", ylabel = L"$u(x,10,t)$", linecolor = :black, linewidth = 2, aspect_ratio = 20.0, grid = false, margin=3mm, legend = false, xlims=(0,Lx), ylims=(0,1))
+    plot(x, U[:,ny], xlabel = L"$x$", ylabel = L"$u(x,5,t)$", linecolor = :black, linewidth = 2, aspect_ratio = 20.0, grid = false, margin=3mm, legend = false, xlims=(0,Lx), ylims=(0,1))
     for i in plot_times
         u = readdlm("ux-$i.csv")
         plot!(x, u, linecolor = :black, linestyle = :dash, linewidth = 2)
     end
     savefig("u_slice_x.pdf")
-    plot(y, U[nx,:], xlabel = L"$y$", ylabel = L"$u(10,y,t)$", linecolor = :black, linewidth = 2, aspect_ratio = 20.0, grid = false, margin=3mm, legend = false, xlims=(0,Ly), ylims=(0,1))
+    plot(y, U[nx,:], xlabel = L"$y$", ylabel = L"$u(5,y,t)$", linecolor = :black, linewidth = 2, aspect_ratio = 20.0, grid = false, margin=3mm, legend = false, xlims=(0,Ly), ylims=(0,1))
     for i in plot_times
         u = readdlm("uy-$i.csv")
         plot!(y, u, linecolor = :black, linestyle = :dash, linewidth = 2)
@@ -72,13 +72,21 @@ function draw_growth(t, Amp, t_min::Float64)
 end
 
 "Plot interface position versus time"
-function draw_interface(t, L, ε, T, x, y, dx, Lx, Ly, Nx, Ny, plot_times)
+function draw_interface(t, t_min, L, ε, x, y, dx, Lx, Ly, Nx, Ny, plot_times)
     gr(); plot() # Load GR plotting backend and clear previous plots
     default(titlefont = (18, "Computer Modern"), guidefont = (26, "Computer Modern"), tickfont = (18, "Computer Modern"))
     plot(t, L, xlabel = L"$t$", ylabel = L"$L(t)$", margin=3mm, xlims=(0, maximum(t)), ylims=(0, maximum(L)), legend = false)
     savefig("L.pdf")
+    # Use polynomial fit to find wave speed
     if ε == 0.0
-        @printf("Numerical travelling wave speed is %f.\n", (L[end]-L[1])/T)
+        ind::Int = 0 # Index corresponding to t = 0.1
+        for i in eachindex(t)
+            if t[i] <= t_min
+                ind += 1
+            end
+        end
+        poly = fit(t[ind:end], L[ind:end], 1) # Fit straight line to data
+        @printf("Numerical travelling wave speed is %f.\n", poly.coeffs[2]) # Print wavespeed
     end
     # Optional: Draw interface
     plot() # Clear previous plots
@@ -127,11 +135,11 @@ function draw()
     L = vec(readdlm("L.csv"))
     Amp = vec(readdlm("Amp.csv"))
     ε = 0.0
-    T = 1.0
+    t_min = 0.1
     # Plot
     draw_heat(x, y, U, ϕ, 0, Lx, Ly) # Heat maps
     draw_slices(x, y, nx, ny, Lx, Ly, plot_times) # Slice plots
-    draw_interface(t, L, ε, T, x, y, dx, Lx, Ly, Nx, Ny, plot_times)
+    draw_interface(t, t_min, L, ε, x, y, dx, Lx, Ly, Nx, Ny, plot_times)
     for i in plot_times
         U = readdlm("U-$i.csv")
         V = readdlm("V-$i.csv")
@@ -139,7 +147,9 @@ function draw()
         draw_heat(x, y, U, V, ϕ, i, Lx, Ly)
     end
     # Numerical growth rate
-    draw_growth(t, Amp, ε)
+    if ε != 0.0
+        draw_growth(t, Amp, t_min)
+    end
 end
 
 @time draw()

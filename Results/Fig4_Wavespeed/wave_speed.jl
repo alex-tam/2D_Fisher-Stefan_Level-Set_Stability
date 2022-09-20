@@ -80,20 +80,24 @@ function main()
     par = Params() # Initialise data structure of model parameters
     ξ = range(-par.Lξ, 0.0, length = par.Nξ); dξ = ξ[2] - ξ[1] # Computational domain (x)
     # Pre-allocate
-    Κ = range(-1.05, 5.0, length = 101)
+    Κ = range(-1.05, 1.05, length = 101)
     C = Vector{Float64}()
     # Obtain leading-order solution
     for κ in Κ
-        c, u0 = leading_order(ξ, dξ, par, κ)
+        if κ == 0.0
+            c = 0.0
+        else
+            c, u0 = leading_order(ξ, dξ, par, κ)
+        end
         push!(C, c)
     end
-    # Numerical results
-    κ_n = [ -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0]
-    c_n = [ -1.265792, -0.935469, -0.712235, -0.542538, -0.410977, -0.301454, -0.209769,  -0.130543, -0.061015, 0.053005, 0.102110, 0.145130, 0.187406, 0.223620, 0.259390, 0.293878, 0.322382, 0.351350, 0.380074, 0.495444, 0.587141, 0.663968, 0.730893, 0.785856, 0.836070, 0.882904, 0.919883, 0.995538, 1.040286, 1.099003, 1.128895, 1.174941 ]
+    # Numerical results, β = 8, polynomial fitting
+    κ_n = [-1.0,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,-0.001,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
+    c_n = [-1.966725,-1.353931,-0.994062,-0.750852,-0.575108,-0.428110,-0.307204,-0.211853,-0.130520,-0.062236,-0.000574,0.045981,0.085967,0.129386,0.167263,0.196941,0.232394,0.262653,0.284912,0.312080,0.338002]
     # Plot
     gr(); plot() # Load GR plotting backend and clear previous plots
     default(fontfamily = "Computer Modern", titlefontsize = 14, guidefontsize = 20, tickfontsize = 14, legendfontsize = 12)
-    plot(Κ, C, xlabel = L"$\kappa$", ylabel = L"$c$", linecolor = :black, linewidth = 2, grid = true, margin=2mm, xlims=(-1.5,5.0), ylims=(-3,1.0), xticks=-1:1:10, yticks=-3:0.5:1.0, legend =:bottomright, label = "Leading-Order Shooting")
+    plot(Κ, C, xlabel = L"$\kappa$", ylabel = L"$c$", linecolor = :black, linewidth = 2, grid = true, margin=2mm, xlims=(-1.5,1.1), ylims=(-3,1.0), xticks=-1.5:0.5:1.5, yticks=-3:0.5:1.0, legend =:bottomright, label = "Leading-Order Shooting")
     scatter!(κ_n, c_n, markersize = 5, markershape = :xcross, markercolor = :red, label = "Full 2D Numerical")
     plot!([-1/(1-par.uf), -1/(1-par.uf)], [-3,1.0], label=false, linewidth = 2, linestyle=:dash, linecolor=:black)
     savefig("Fig4.pdf")
