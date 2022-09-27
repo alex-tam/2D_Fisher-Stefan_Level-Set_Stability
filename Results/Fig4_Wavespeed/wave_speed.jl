@@ -104,7 +104,7 @@ function main()
     default(fontfamily = "Computer Modern", titlefontsize = 14, guidefontsize = 20, tickfontsize = 14, legendfontsize = 12)
     plot(Κ, C, xlabel = L"$\kappa$", ylabel = L"$c$", linecolor = :black, linewidth = 2, grid = true, margin=2mm, xlims=(-1.5,1.1), ylims=(-3,1.0), xticks=-1.5:0.5:1.5, yticks=-3:0.5:1.0, legend =:bottomright, label = "Leading-Order Shooting")
     scatter!(κ_n, c_n, markersize = 5, markershape = :xcross, markercolor = :red, label = "Full 2D Numerical")
-    plot!(κp, cp,  label = "Perturbation Solution", linewidth=2,linestyle=:dash, linecoloe=:blue)
+    plot!(κp, cp,  label = "Perturbation Solution", linewidth=2,linestyle=:dash, linecolor=:blue)
     plot!([-1/(1-par.uf), -1/(1-par.uf)], [-3,1.0], label=false, linewidth = 2, linestyle=:dash, linecolor=:black)
     savefig("Fig4.pdf")
 end
