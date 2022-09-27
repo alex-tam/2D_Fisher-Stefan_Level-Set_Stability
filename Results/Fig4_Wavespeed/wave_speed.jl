@@ -94,11 +94,17 @@ function main()
     # Numerical results, β = 8, polynomial fitting
     κ_n = [-1.0,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,-0.001,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
     c_n = [-1.966725,-1.353931,-0.994062,-0.750852,-0.575108,-0.428110,-0.307204,-0.211853,-0.130520,-0.062236,-0.000574,0.045981,0.085967,0.129386,0.167263,0.196941,0.232394,0.262653,0.284912,0.312080,0.338002]
+    # Perturbation solution
+    cp = range(-0.5,0.5,length=1001)
+    κp = 3/(sqrt(3*(2*par.uf+1))*(1-par.uf))*cp .+ 
+        0.6*(((2*par.uf^2-3*par.uf-2)*sqrt(2*par.uf+1)+3*sqrt(3))/((2*par.uf+1)^(3/2)*(1-par.uf)^3)).*cp.^2 .- 
+        18*sqrt(3)/(25*(2*par.uf+1)^(5/2)*(sqrt(3)*sqrt(2*par.uf+1)+3)^2*(sqrt(3)*sqrt(2*par.uf+1)-3)^2*(1-par.uf)^3)
     # Plot
     gr(); plot() # Load GR plotting backend and clear previous plots
     default(fontfamily = "Computer Modern", titlefontsize = 14, guidefontsize = 20, tickfontsize = 14, legendfontsize = 12)
     plot(Κ, C, xlabel = L"$\kappa$", ylabel = L"$c$", linecolor = :black, linewidth = 2, grid = true, margin=2mm, xlims=(-1.5,1.1), ylims=(-3,1.0), xticks=-1.5:0.5:1.5, yticks=-3:0.5:1.0, legend =:bottomright, label = "Leading-Order Shooting")
     scatter!(κ_n, c_n, markersize = 5, markershape = :xcross, markercolor = :red, label = "Full 2D Numerical")
+    plot!(κp, cp,  label = "Perturbation Solution", linewidth=2,linestyle=:dash)
     plot!([-1/(1-par.uf), -1/(1-par.uf)], [-3,1.0], label=false, linewidth = 2, linestyle=:dash, linecolor=:black)
     savefig("Fig4.pdf")
 end
