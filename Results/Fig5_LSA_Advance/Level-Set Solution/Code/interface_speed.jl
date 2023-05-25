@@ -187,7 +187,7 @@ function find_ux_y(ip, uf, U, ϕ, par, dx, dy)
         ϕrmm = θN*ϕ[i-2,j+1] + (1-θN)*ϕ[i-2,j] # ϕ two points to left of interface point
         urmm = θN*U[i-2,j+1] + (1-θN)*U[i-2,j] # U two points to left of interface point
         if ϕrmm < 0 # If point two to the left of interface is in Ω (should always occur for perturbed planar fronts)
-            return (3uf - 4*urm + urmm) # One-sided difference
+            return (3uf - 4*urm + urmm)/(2*dx) # One-sided difference
         else
             θg = ϕrm/(ϕrm-ϕrmm) # θ for second interface ghost point
             K = get_curvature_ghost(i-2, j, 1-θg, θN, ϕ, par, dx, dy)
