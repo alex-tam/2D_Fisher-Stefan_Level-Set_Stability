@@ -10,8 +10,9 @@ function draw_numerical()
     # Import data (κ,uf,γ)
     q = vec(readdlm("q-(-0.5,0.1,0.1).csv")); ω = vec(readdlm("omega-(-0.5,0.1,0.1).csv"))
     qn = [0, 2, 4, 6, 8, 10, 12, 14].*(π/10) # Numerical wave numbers
-    # ωn = [0.0, 0.129789, 0.286484, 0.237914, -0.053153, -0.272188, -1.270535, -2.114867] # Numerical growth rates
-    ωn = [0.0, 0.129789, 0.286484, 0.237914, -0.045169, -0.521448, -1.345412, -2.114867] # Numerical growth rates
+    # ωn = [0.0, 0.129789, 0.286484, 0.237914, -0.045169, -0.521448, -1.345412, -2.114867] # Numerical growth rates
+    ωn = [0.0, 0.144394, 0.290952, 0.261780, -0.042617, -0.510499, -1.252540, -2.106914] # Numerical growth rates
+    # Differences in ω here occur because the perturbation_amplitude plot is not perfectly linear, and features some 'spikes' that might cause random variation in ω
     # Plot data
     plot(q, ω, label = L"$\textrm{Theoretical}$", linecolor=:black, linewidth = 2, xlabel = L"$q$", ylabel = L"$\omega$", margin = 3mm, xlims = (0, 5.0), ylims = (-3.0,0.5), grid = true, legend=:bottomleft)
     scatter!(qn, ωn, label = L"$\textrm{Numerical}$", linecolor=:red, markercolor=:red, markersize = 6)
