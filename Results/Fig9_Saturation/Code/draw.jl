@@ -58,7 +58,7 @@ function draw_growth(t, Amp, t_min::Float64)
     default(fontfamily = "Computer Modern", titlefontsize = 14, guidefontsize = 20, tickfontsize = 14, legendfontsize = 14)
     ind::Int = 0 # Index corresponding to t = 0.1
     ind_end::Int = 1001 # Index for t = 1
-    for i = 1:length(t)
+    for i in eachindex(t)
         if t[i] <= t_min
             ind += 1
         end
@@ -76,8 +76,6 @@ end
 function draw_interface(t, L, ε, x, y, dx, Lx, Ly, Nx, Ny, plot_times)
     gr(); plot() # Load GR plotting backend and clear previous plots
     default(titlefont = (18, "Computer Modern"), guidefont = (26, "Computer Modern"), tickfont = (18, "Computer Modern"))
-    plot(t, L, xlabel = L"$t$", ylabel = L"$L(t)$", margin=3mm, xlims=(0,maximum(t)), ylims=(0,maximum(L)), legend = false)
-    savefig("L.pdf")
     if ε == 0.0
         @printf("Numerical travelling wave speed is %f.\n", (L[end]-L[1])/par.T)
     end
@@ -90,7 +88,7 @@ end
 "Draw interface as series of points"
 function plot_interface(x, y, dx, Lx, Ly, Nx, Ny, plot_times)
     pt = vcat(0, plot_times)
-    pt = [0,1000,2000,3000,4000,5000,6000,7000]
+    pt = [0,1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
     for k in pt
         # Import level-set function at relevant time
         ϕ = readdlm("Phi-$k.csv")

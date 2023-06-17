@@ -195,7 +195,7 @@ function find_ux_y(ip, uf, U, ϕ, par, dx, dy)
             return (1/dx)*( (2+θg)*uf/(1+θg) - (1+θg)*urm/θg + ufg/(θg*(1+θg)) ) # Non-standard one-sided difference
         end
     else # If ghost nodes to left and right of interface are both not in Ω (should never occur for perturbed planar fronts)
-        # Could attempt to locate ghost nodes, but rseults would probably be inaccurate
+        # Could attempt to locate ghost nodes, but results would probably be inaccurate
         return 0.0
     end
 end

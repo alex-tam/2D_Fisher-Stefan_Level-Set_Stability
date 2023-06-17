@@ -34,10 +34,10 @@ include("reinitialisation.jl")
     θ::Float64 = 1.99 # [-] Parameter for minmod flux-limiter
     Lx::Float64 = 10.0 # [-] Spatial domain limit (x)
     Ly::Float64 = 10.0 # [-] Spatial domain limit (y)
-    T::Float64 = 7.0 # [-] End time
-    Nx::Int = 401 # [-] Number of grid points (x)
-    Ny::Int = 401 # [-] Number of grid points (y)
-    Nt::Int = 7001 # [-] Number of time steps
+    T::Float64 = 10.0 # [-] End time
+    Nx::Int = 301 # [-] Number of grid points (x)
+    Ny::Int = 301 # [-] Number of grid points (y)
+    Nt::Int = 10001 # [-] Number of time steps
     Nξ::Int = 2001 # [-] Number of grid points for travelling wave (ξ)
     V_Iterations::Int = 20 # [-] Number of iterations for velocity extrapolation PDE
     ϕ_Iterations::Int = 20 # [-] Number of iterations for reinitialisation PDE
