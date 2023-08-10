@@ -63,7 +63,7 @@ function fkpp_rhs!(du, u, p, t, D, dΩ, ϕ, uf, y, par, dx, dy)
                 u_bottom = U[D[i].xInd, par.Ny-1]
             end
             if ϕ[D[i].xInd, 2] >= 0
-                u_top = par.uf - get_interface_density(D[i].xInd, 1, D[i].xInd, 2, dΩ, uf)
+                u_top = get_interface_density(D[i].xInd, 1, D[i].xInd, 2, dΩ, uf)
             else
                 u_top = U[D[i].xInd, 2]
             end
