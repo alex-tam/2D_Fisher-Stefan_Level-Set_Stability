@@ -1,5 +1,5 @@
 # Compute extension velocity field for Fisher-Stefan level-set method
-# Alex Tam, 02/02/2022
+# Nizhum Rahman and Alex Tam, 08/12/2023
 
 "Compute velocity extension by orthogonal extrapolation"
 function extend_velocity(D, dΩ, U, ϕ, par, dx, dy)
@@ -19,7 +19,6 @@ function extend_velocity(D, dΩ, U, ϕ, par, dx, dy)
     return V
 end
 
-# This could be changed, perhaps
 "Obtain initial condition for V(x,y,t) using speed at interface"
 function velocity_init(D, dΩ, par, vi)
     V = zeros(par.Nx, par.Ny) # Pre-allocate matrix of V(x,y,t)
@@ -28,13 +27,25 @@ function velocity_init(D, dΩ, par, vi)
         if (gp.dΩ == true) # If grid point is close to interface
             # Locate closest interface point to current grid point
             if (gp.θxp < gp.θxm) && (gp.θxp < gp.θyp) && (gp.θxp < gp.θym) # Closest point in positive x-direction
-                xm = gp.xInd; xp = gp.xInd+1; ym = gp.yInd; yp = gp.yInd
+                xm = gp.xInd
+                xp = gp.xInd+1
+                ym = gp.yInd
+                yp = gp.yInd
             elseif (gp.θxm < gp.θxp) && (gp.θxm < gp.θyp) && (gp.θxm < gp.θym) # Closest point in negative x-direction
-                xm = gp.xInd-1; xp = gp.xInd; ym = gp.yInd; yp = gp.yInd
+                xm = gp.xInd-1
+                xp = gp.xInd
+                ym = gp.yInd
+                yp = gp.yInd
             elseif (gp.θyp < gp.θxm) && (gp.θyp < gp.θxp) && (gp.θyp < gp.θym) # Closest point in positive y-direction
-                xm = gp.xInd; xp = gp.xInd; ym = gp.yInd; yp = gp.yInd+1
+                xm = gp.xInd
+                xp = gp.xInd
+                ym = gp.yInd
+                yp = gp.yInd+1
             else # Closest point in negative y-direction
-                xm = gp.xInd; xp = gp.xInd; ym = gp.yInd-1; yp = gp.yInd
+                xm = gp.xInd
+                xp = gp.xInd
+                ym = gp.yInd-1
+                yp = gp.yInd
             end
             # Assign V to interface speed at closest point
             for i in eachindex(dΩ)
@@ -110,8 +121,8 @@ function vel_outward_rhs!(du, u, p, t, D, dΩ, vi, par, ϕ, dx, dy)
                         Vy = (V[D[i].xInd, 1] - V[D[i].xInd, par.Ny-1])/dy
                     else
                         # Obtain interface velocity
-                        v = get_interface_speed(D[i].xInd, par.Ny-1, D[i].xInd, D[i].yInd, dΩ, vi)
-                        Vy = (V[D[i].xInd, D[i].yInd]-v)/(D[i].θym*dy)
+                        v = get_interface_speed(D[i].xInd, par.Ny-1, D[i].xInd, par.Ny, dΩ, vi)
+                        Vy = (V[D[i].xInd, D[i].yInd] - v)/(D[i].θym*dy)
                     end
                 end
             elseif D[i].yInd == par.Ny # Upper boundary
